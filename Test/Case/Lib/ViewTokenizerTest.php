@@ -169,6 +169,22 @@ class ViewTokenizerTest extends CakeTestCase {
 		$this->Tokenizer->setString('<?php echo $a, h($b), $c;?>');
 		$this->assertFalse($this->Tokenizer->check());
 		$this->assertEquals(array(array(309, '$a', 1), array(309, '$c', 1)), $this->Tokenizer->getErrors());
+
+		$this->Tokenizer->setString('<?php echo($a, h($b), $c);?>');
+		$this->assertFalse($this->Tokenizer->check());
+		$this->assertEquals(array(array(309, '$a', 1), array(309, '$c', 1)), $this->Tokenizer->getErrors());
+
+		$this->Tokenizer->setString('<?php echo(($a, h($b), $c));?>');
+		$this->assertFalse($this->Tokenizer->check());
+		$this->assertEquals(array(array(309, '$a', 1), array(309, '$c', 1)), $this->Tokenizer->getErrors());
+
+		$this->Tokenizer->setString('<?php echo((($a, h($b), $c)));?>');
+		$this->assertFalse($this->Tokenizer->check());
+		$this->assertEquals(array(array(309, '$a', 1), array(309, '$c', 1)), $this->Tokenizer->getErrors());
+
+		$this->Tokenizer->setString('<?php echo $a, h($b), $c;?>');
+		$this->assertFalse($this->Tokenizer->check());
+		$this->assertEquals(array(array(309, '$a', 1), array(309, '$c', 1)), $this->Tokenizer->getErrors());
 	}
 
 	public function testRawFunctionWhitelist() {
@@ -205,5 +221,11 @@ class ViewTokenizerTest extends CakeTestCase {
 		$this->Tokenizer->setString('<?php exit("hi");?>');
 		$this->assertFalse($this->Tokenizer->check());
 		$this->assertEquals(array(array(300, 'exit', 1)), $this->Tokenizer->getErrors());
+	}
+
+	public function testChunks() {
+		$str = '<li><a href="<?php echo $this->Html->url(array("controller" => "asset_folders", "action" => "add", $current["AssetFolder"]["id"])); ?>" class="button button-gray"><span class="add"></span>Create folder</a></li>';
+		$this->Tokenizer->setString($str);
+		$this->assertTrue($this->Tokenizer->check());
 	}
 }

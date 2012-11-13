@@ -4,17 +4,40 @@ App::uses('BaseTokenizer', 'Security.Lib');
 
 class ViewTokenizer extends BaseTokenizer {
 
+	protected $_nestedLevel = 0;
+
+	protected $_inFunctionArgumentList = false;
+
 /**
  * Check file for security errors
  *
  * @return boolean
  */
 	public function check() {
+		$this->_safe = false;
+		$this->_inFunctionArgumentList = false;
 		$this->_errors = array();
 		$this->_resetState();
+		$this->_nestedLevel = 0;
 
 		foreach ($this->_tokens as $token) {
 			if (!is_array($token)) {
+				if ($token === '(') {
+					$this->_nestedLevel++;
+				}
+
+				if ($token === ')') {
+					$this->_nestedLevel--;
+				}
+
+				if ($this->_nestedLevel === 0) {
+					$this->_inFunctionArgumentList = false;
+				}
+
+				if ($this->_inFunctionArgumentList) {
+					continue;
+				}
+
 				// Concatenation should mark output as not safe
 				if (in_array($token, array('.', ','))) {
 					$this->_safe = false;
@@ -49,6 +72,13 @@ class ViewTokenizer extends BaseTokenizer {
 				// Close tag found, reset our state
 				case T_CLOSE_TAG:
 					$this->_resetState();
+					break;
+
+				case T_OBJECT_OPERATOR:
+				case T_PAAMAYIM_NEKUDOTAYIM:
+				case T_ARRAY:
+					$this->_inFunctionArgumentList = true;
+					$this->_safe = true;
 					break;
 
 				// Strings and variables is what we want to check for
