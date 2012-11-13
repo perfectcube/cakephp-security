@@ -53,3 +53,8 @@ The following is not allowed in Views
 
 Additionally, the script tries to figure out if any echo you do, is wrapped in h() or not.
 Anything you echo from a ViewHelper is assumed to be safe
+
+# Workarounds
+
+Calling die() / exit() is fairly normal in PHP, but it makes CakePHP code impossible to test.
+If you really need to stop the processing, please use Cake's _stop() method, defined in Object.php
