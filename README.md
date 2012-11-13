@@ -58,5 +58,11 @@ Anything you echo from a ViewHelper is assumed to be safe
 
 # Workarounds
 
+## die / exit
+
 Calling die() / exit() is fairly normal in PHP, but it makes CakePHP code impossible to test.
 If you really need to stop the processing, please use Cake's _stop() method, defined in Object.php
+
+## safe variables
+
+Simply wrap them in raw() and the script will asume they are safe and don't need esacping
