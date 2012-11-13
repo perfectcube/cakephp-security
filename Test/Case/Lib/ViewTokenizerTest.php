@@ -157,6 +157,44 @@ class ViewTokenizerTest extends CakeTestCase {
 		$this->Tokenizer->setString('<?php echo h($a), h($b), h($c);?>');
 		$this->assertTrue($this->Tokenizer->check());
 		$this->assertEquals(array(), $this->Tokenizer->getErrors());
+
+		$this->Tokenizer->setString('<?php echo h($a), $b, h($c);?>');
+		$this->assertFalse($this->Tokenizer->check());
+		$this->assertEquals(array(array(309, '$b', 1)), $this->Tokenizer->getErrors());
+
+		$this->Tokenizer->setString('<?php echo h($a), $b, $c;?>');
+		$this->assertFalse($this->Tokenizer->check());
+		$this->assertEquals(array(array(309, '$b', 1), array(309, '$c', 1)), $this->Tokenizer->getErrors());
+
+		$this->Tokenizer->setString('<?php echo $a, h($b), $c;?>');
+		$this->assertFalse($this->Tokenizer->check());
+		$this->assertEquals(array(array(309, '$a', 1), array(309, '$c', 1)), $this->Tokenizer->getErrors());
+	}
+
+	public function testRawFunctionWhitelist() {
+		$this->Tokenizer->setString('<?php echo $a, $b, raw($c);?>');
+		$this->assertFalse($this->Tokenizer->check());
+		$this->assertEquals(array(array(309, '$a', 1), array(309, '$b', 1)), $this->Tokenizer->getErrors());
+
+		$this->Tokenizer->setString('<?php echo $a, raw($b), raw($c);?>');
+		$this->assertFalse($this->Tokenizer->check());
+		$this->assertEquals(array(array(309, '$a', 1)), $this->Tokenizer->getErrors());
+
+		$this->Tokenizer->setString('<?php echo raw($a), raw($b), raw($c);?>');
+		$this->assertTrue($this->Tokenizer->check());
+		$this->assertEquals(array(), $this->Tokenizer->getErrors());
+
+		$this->Tokenizer->setString('<?php echo raw($a), $b, raw($c);?>');
+		$this->assertFalse($this->Tokenizer->check());
+		$this->assertEquals(array(array(309, '$b', 1)), $this->Tokenizer->getErrors());
+
+		$this->Tokenizer->setString('<?php echo raw($a), $b, $c;?>');
+		$this->assertFalse($this->Tokenizer->check());
+		$this->assertEquals(array(array(309, '$b', 1), array(309, '$c', 1)), $this->Tokenizer->getErrors());
+
+		$this->Tokenizer->setString('<?php echo $a, raw($b), $c;?>');
+		$this->assertFalse($this->Tokenizer->check());
+		$this->assertEquals(array(array(309, '$a', 1), array(309, '$c', 1)), $this->Tokenizer->getErrors());
 	}
 
 	public function testNoExitsOrDiesAllowed() {

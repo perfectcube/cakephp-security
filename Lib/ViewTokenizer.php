@@ -1,7 +1,4 @@
 <?php
-// http://www.php.net/manual/en/tokens.php
-// http://www.php.net/manual/en/function.token-get-all.php
-//
 
 App::uses('BaseTokenizer', 'Security.Lib');
 
@@ -19,7 +16,7 @@ class ViewTokenizer extends BaseTokenizer {
 		foreach ($this->_tokens as $token) {
 			if (!is_array($token)) {
 				// Concatenation should mark output as not safe
-				if (in_array($token, array('.'))) {
+				if (in_array($token, array('.', ','))) {
 					$this->_safe = false;
 				}
 
@@ -70,7 +67,7 @@ class ViewTokenizer extends BaseTokenizer {
 					}
 
 					// If our echo includes a call to h() it's safe
-					if ($token[0] == T_STRING && $token[1] === 'h') {
+					if ($token[0] == T_STRING && in_array($token[1], array('h', 'raw'))) {
 						$this->_safe = true;
 						break;
 					}

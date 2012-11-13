@@ -1,9 +1,5 @@
 <?php
 
-// http://www.php.net/manual/en/tokens.php
-// http://www.php.net/manual/en/function.token-get-all.php
-//
-
 App::uses('BaseTokenizer', 'Security.Lib');
 
 class ControllerTokenizer extends BaseTokenizer {
