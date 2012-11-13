@@ -31,8 +31,9 @@ The following is not allowed in Controllers
 * require_once()
 * include()
 * include_once()
-* print
-* echo
+* print()
+* echo()
+* eval()
 
 ## Validating Views
 
@@ -50,6 +51,7 @@ The following is not allowed in Views
 * require_once()
 * include()
 * include_once()
+* eval()
 
 Additionally, the script tries to figure out if any echo you do, is wrapped in h() or not.
 Anything you echo from a ViewHelper is assumed to be safe
